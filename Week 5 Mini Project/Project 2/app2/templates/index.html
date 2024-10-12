@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Intensity Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #plot {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Traffic Intensity Prediction</h2>
+        <form id="upload-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="csv-file">Upload CSV File:</label>
+                <input type="file" id="csv-file" name="csv-file" accept=".csv" required>
+            </div>
+            <button type="submit">Predict and Plot</button>
+        </form>
+        <div id="plot"></div>
+    </div>
+
+    <script>
+        document.getElementById('upload-form').onsubmit = async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('csv-file');
+            formData.append('csv-file', fileInput.files[0]);
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.plot) {
+                const img = document.createElement('img');
+                img.src = 'data:image/png;base64,' + result.plot;
+                document.getElementById('plot').innerHTML = '';
+                document.getElementById('plot').appendChild(img);
+            }
+        }
+    </script>
+</body>
+</html>
